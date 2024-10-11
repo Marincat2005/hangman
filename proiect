@@ -1,0 +1,74 @@
+import csv
+
+
+def read_csv(file_path):
+
+    with open(file_path, mode='r', encoding='utf-8-sig') as file:
+        reader = csv.reader(file, delimiter=';')
+        data = [row for row in reader]
+    return data
+
+
+def find_word_by_letter(start_word, target_word, max_attempts_per_letter=1200):
+
+    total_attempts = 0
+    current_word = list(start_word)
+
+    for i, char in enumerate(current_word):
+        if char == '*':  # Dacă litera este necunoscută
+            attempts = 0
+            while attempts < max_attempts_per_letter:
+                attempts += 1
+                total_attempts += 1
+
+                # Încercăm să ghicim litera corectă (preluată din cuvântul țintă)
+                if target_word[i] != '*':
+                    current_word[i] = target_word[i]
+                    break
+
+            # Dacă nu am reușit să ghicim litera după max_attempts_per_letter, ieșim
+            if current_word[i] == '*':
+                return False, total_attempts
+
+    # Verificăm dacă cuvântul final este identic cu cuvântul țintă
+    if ''.join(current_word) == target_word:
+        return True, total_attempts
+    else:
+        return False, total_attempts
+
+
+def main(file_path):
+    
+    data = read_csv(file_path)
+    results = []
+    total_attempts_all_games = 0
+    solved_words = []
+
+    for row in data:
+        if len(row) != 3:
+            print(f"Linie invalidă în fișier: {row}")
+            continue
+        game_code, start_word, target_word = row
+        found, total_attempts = find_word_by_letter(start_word, target_word)
+        results.append((game_code, found, total_attempts))
+        total_attempts_all_games += total_attempts
+        if found:
+            solved_words.append((game_code, target_word, total_attempts))
+
+    # Afișarea rezultatelor pentru fiecare joc
+    for result in results:
+        print(f"Cod joc: {result[0]}, Găsit: {result[1]}, Încercări: {result[2]}")
+
+    # Afișarea sumarului final
+    print("\nRezumat final:")
+    print(f"Cuvinte rezolvate: {len(solved_words)}")
+    for game_code, word, attempts in solved_words:
+        print(f"Cod joc: {game_code}, Cuvânt: {word}, Încercări: {attempts}")
+
+    # Afișarea numărului total de încercări după ce toate rezultatele sunt afișate
+    print(f"\nNumăr total de încercări pentru toate jocurile: {total_attempts_all_games}")
+
+
+if _name_ == "_main_":
+    file_path = r'C:\Users\tsise\Desktop\cuvinte_de_verificat.txt'
+    main(file_path)
