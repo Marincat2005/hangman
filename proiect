@@ -69,6 +69,6 @@ def main(file_path):
     print(f"\nNumăr total de încercări pentru toate jocurile: {total_attempts_all_games}")
 
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     file_path = r'C:\Users\tsise\Desktop\cuvinte_de_verificat.txt'
     main(file_path)
